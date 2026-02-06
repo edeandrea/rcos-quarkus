@@ -4,8 +4,20 @@ Place for the RCOS Quarkus team to collaborate
 https://github.com/quarkiverse/quarkus-roq/issues/732
 
 There are a few static example websites:
-- https://github.com/quarkusio/quarkus-workshop-langchain4j/tree/main/docs (Rendered as https://quarkus.io/quarkus-workshop-langchain4j)
-- https://github.com/smallrye/smallrye-stork/tree/main/docs (Rendered as https://smallrye.io/smallrye-stork/latest)
+- LangChain4j Workshop: https://github.com/quarkusio/quarkus-workshop-langchain4j/tree/main/docs (Rendered as https://quarkus.io/quarkus-workshop-langchain4j)
+- SmallRye Stork: https://github.com/smallrye/smallrye-stork/tree/main/docs (Rendered as https://smallrye.io/smallrye-stork/latest)
+
+The Stork website is probably a bit simpler if the LangChain4j workshop is overwhelming.
+
+## Goals
+
+1. Manually convert mkdocs -> Quarkus Roq
+2. Keep a journal/notes of things that worked well, didn't work at all, or features in ROQ that are missing
+3. If there are things missing (& you feel up to the task), help define/implement the features in ROQ
+4. Ultimately, automate a migration somehow (not expected to be completed for this assignment)
+    - Could something be built in ROQ to do the conversion?
+    - Would it be better to build something outside of ROQ?
+    - What about [OpenRewrite recipes](https://docs.openrewrite.org/)?
 
 [**Zulip chat**](https://quarkusio.zulipchat.com/#narrow/channel/187038-dev/topic/RPI.20RCOS.20students.20working.20on.20Quarkus/with/570502971) is where other community members "live". Feel free to ask questions in there.
 
