@@ -21,6 +21,8 @@ The Stork website is probably a bit simpler if the LangChain4j workshop is overw
 
 [**Zulip chat**](https://quarkusio.zulipchat.com/#narrow/channel/187038-dev/topic/RPI.20RCOS.20students.20working.20on.20Quarkus/with/570502971) is where other community members "live". Feel free to ask questions in there.
 
+Questions related directly about ROQ can be asked directly on https://github.com/quarkiverse/quarkus-roq/issues/732. [Andy Damevin](https://github.com/ia3andy) is the project lead.
+
 # Background info
 ## What is Quarkus?
 **Quarkus** is a "Supersonic Subatomic" Java framework designed for the modern cloud era. While traditional Java frameworks were built for long-running servers, Quarkus is optimized to run in containers with incredibly fast startup times and very low memory usage.
