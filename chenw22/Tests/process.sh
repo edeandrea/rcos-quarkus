@@ -1,15 +1,18 @@
-mkdir content
-mkdir data
-mkdir public
+mkdir -p content
+mkdir -p data
+mkdir -p public
 
+shopt -s dotglob nullglob
 for item in * .*; do
-  [[ "$item" == "." || "$item" == ".." ]] && continue
+  
 
-  [[ "$item" == "content" || "$item" == "public" ]] && continue
+  [[ "$item" == "content" || "$item" == "public" || "$item" == "data" || "$item" == "$(basename "$0")" ]] && continue
 
-  if [[ "$item" == "images" || "$item" == "diagrams" ]]; then
-    mv "$item" public/
+  if [[ "$item" == "images" || "$item" == "diagrams"]]; then
+    mv -n "$item" public/
   else
-    mv "$item" content/
+    mv -n "$item" content/
   fi
 done
+
+shopt -u dotglob nullglob
