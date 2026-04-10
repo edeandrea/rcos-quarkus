@@ -78,9 +78,15 @@
                         </configuration>
                     </execution>
                 </executions>
+            </plugin>
+             <!-- Openrewrite for managing md files -->
+            <plugin>
+                <groupId>org.openrewrite.maven</groupId>
+                <artifactId>rewrite-maven-plugin</artifactId>
+                <version>6.35.0</version>
+            </plugin>
         </plugins>
     </build>
-
     <dependencies>
         <dependency>
             <groupId>io.smallrye.stork</groupId>
