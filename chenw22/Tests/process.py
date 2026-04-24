@@ -4,75 +4,77 @@ import yaml
 import re
 from pathlib import Path
 
-MKDOCS_DIR = "docs/docs"
-OUTPUT_DIR = "roq-site"
-CONTENT_DIR = os.path.join(OUTPUT_DIR, "content")
-PUBLIC_DIR = os.path.join(OUTPUT_DIR, "public")
+MKDOCS_DIR = Path("docs/docs")
+OUTPUT_DIR = Path("roq-site")
+CONTENT_DIR = OUTPUT_DIR / "content"
+PUBLIC_DIR = OUTPUT_DIR / "public"
+
 
 def load_mkdocs_nav(mkdocs_file="mkdocs.yml"):
-    if not os.path.exists(mkdocs_file):
+    mkdocs_path = Path(mkdocs_file)
+    if not mkdocs_path.exists():
         return []
-    with open(mkdocs_file, "r") as f:
+    with mkdocs_path.open("r", encoding="utf-8") as f:
         config = yaml.safe_load(f)
     return config.get("nav", [])
 
 def ensure_dirs():
-    os.makedirs(CONTENT_DIR, exist_ok=True)
-    os.makedirs(PUBLIC_DIR, exist_ok=True)
+    CONTENT_DIR.mkdir(parents=True, exist_ok=True)
+    PUBLIC_DIR.mkdir(parents=True, exist_ok=True)
 
 def convert_frontmatter(title):
-    return f"""---
-title: {title}
-layout: default
----
-
-"""
+    fm = {
+        "title": title,
+        "layout": "default"
+    }
+    return yaml.safe_dump(fm, sort_keys=False).rstrip() + "\n---\n\n"
 
 def extract_title(md_text, fallback):
     match = re.search(r"^# (.+)", md_text, re.MULTILINE)
     return match.group(1).strip() if match else fallback
 
+def slugify(name):
+    return re.sub(r"[^a-zA-Z0-9_-]+", "-", name).strip("-").lower()
+
 def rewrite_links(content):
-    content = re.sub(r"\]\((.*?)\.md\)", r"](\1/)", content)
-    return content
+    return re.sub(
+        r"\]\(([^)]+?)\.md(#[^)]+)?\)",
+        lambda m: f"]({m.group(1)}/{m.group(2) or ''})",
+        content
+    )
 
 def process_markdown_file(src_path, dest_path):
-    with open(src_path, "r", encoding="utf-8") as f:
-        content = f.read()
+    text = src_path.read_text(encoding="utf-8")
 
-    title = extract_title(content, Path(src_path).stem)
-    content = rewrite_links(content)
+    title = extract_title(text, src_path.stem)
+    text = rewrite_links(text)
 
-    final = convert_frontmatter(title) + content
+    final = convert_frontmatter(title) + text
 
-    os.makedirs(os.path.dirname(dest_path), exist_ok=True)
-    with open(dest_path, "w", encoding="utf-8") as f:
-        f.write(final)
+    dest_path.parent.mkdir(parents=True, exist_ok=True)
+    dest_path.write_text(final, encoding="utf-8")
+
 
 def copy_assets():
-    for root, _, files in os.walk(MKDOCS_DIR):
-        for file in files:
-            if not file.endswith(".md"):
-                src = os.path.join(root, file)
-                rel = os.path.relpath(src, MKDOCS_DIR)
-                dest = os.path.join(PUBLIC_DIR, rel)
-                os.makedirs(os.path.dirname(dest), exist_ok=True)
-                shutil.copy2(src, dest)
+    for path in MKDOCS_DIR.rglob("*"):
+        if path.is_file() and path.suffix != ".md":
+            rel = path.relative_to(MKDOCS_DIR)
+            dest = PUBLIC_DIR / rel
+            dest.parent.mkdir(parents=True, exist_ok=True)
+            shutil.copy2(path, dest)
+
 
 def convert_all():
-    for root, _, files in os.walk(MKDOCS_DIR):
-        for file in files:
-            if file.endswith(".md"):
-                src = os.path.join(root, file)
-                rel = os.path.relpath(src, MKDOCS_DIR)
+    for path in MKDOCS_DIR.rglob("*.md"):
+        rel = path.relative_to(MKDOCS_DIR)
 
-                if file == "index.md":
-                    dest = os.path.join(CONTENT_DIR, rel)
-                else:
-                    name = Path(file).stem
-                    dest = os.path.join(CONTENT_DIR, os.path.dirname(rel), name, "index.md")
+        if path.name == "index.md":
+            dest = CONTENT_DIR / rel
+        else:
+            slug = slugify(path.stem)
+            dest = CONTENT_DIR / rel.parent / slug / "index.md"
 
-                process_markdown_file(src, dest)
+        process_markdown_file(path, dest)
 
 if __name__ == "__main__":
     ensure_dirs()
