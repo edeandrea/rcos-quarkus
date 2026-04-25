@@ -4,11 +4,12 @@ mkdir -p public
 
 shopt -s dotglob nullglob
 for item in * .*; do
-  
 
   [[ "$item" == "content" || "$item" == "public" || "$item" == "data" || "$item" == "$(basename "$0")" ]] && continue
 
-  if [[ "$item" == "images" || "$item" == "diagrams"]]; then
+  if [[ "$item" == *.yaml || "$item" == *.yml ]]; then
+    mv -n "$item" data/
+  elif [[ "$item" == "images" || "$item" == "diagrams" ]]; then
     mv -n "$item" public/
   else
     mv -n "$item" content/
